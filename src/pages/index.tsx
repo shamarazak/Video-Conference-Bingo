@@ -1,9 +1,24 @@
 import BingoCard from "@/components/BingoTile";
+import { useState } from "react";
+import ConfettiExplosion from "react-confetti-explosion";
+import { useSpring, animated } from "react-spring";
 
 const Home = () => {
+  const [bingo, setBingo] = useState(false);
+
+  const styles = useSpring({
+    from: { background: "lightblue" },
+    to: async (next) => {
+      while (true) {
+        await next({ background: "lightgreen" });
+        await next({ background: "lightblue" });
+      }
+    },
+  });
   return (
-    <div className="flex items-center justify-center min-h-screen bg-red-300 w-full ">
-      <svg preserveAspectRatio="xMidYMid slice" viewBox="10 10 80 80">
+    // <animated.div className="background" style={styles}>
+    <div className="flex items-center justify-center min-h-screen w-full ">
+      {/* <svg preserveAspectRatio="xMidYMid slice" viewBox="10 10 80 80">
         <defs>
           <style>
             {`
@@ -54,10 +69,15 @@ const Home = () => {
           className="in-bottom"
           d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"
         />
-      </svg>
-
-      <BingoCard />
+      </svg> */}
+      {bingo && (
+        <div className="absolute right-[50%] top-0">
+          <ConfettiExplosion force={0.8} duration={3000} particleCount={250} />
+        </div>
+      )}
+      <BingoCard setBingo={setBingo} bingo={bingo} />
     </div>
+    // </animated.div>
   );
 };
 
