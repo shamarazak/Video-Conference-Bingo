@@ -41,7 +41,7 @@ const Home = () => {
           </div>
         )}
         <div className="mx-auto w-full flex justify-center items-center absolute h-full">
-          <BingoCard setBingo={setBingo} bingo={bingo} />
+          <BingoCard setBingo={setBingo} />
         </div>
       </div>
     </div>

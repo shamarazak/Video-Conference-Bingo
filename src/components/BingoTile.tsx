@@ -70,7 +70,10 @@ const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
 
   return true;
 };
-const BingoCard = ({ setBingo, bingo }: any) => {
+
+const BingoCard: React.FC<{
+  setBingo: (value: boolean) => void;
+}> = ({ setBingo }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [winningPatterns, setWinningPatterns] = useState<number[][]>([]);
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
@@ -119,7 +122,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
         const updatedFoundPatterns = foundPatterns.filter(
           (pattern) => !pattern.includes(index)
         );
-
+        console.log(updatedFoundPatterns);
         setFoundPatterns(updatedFoundPatterns);
       }
       setSlots(updatedSlots);
@@ -130,7 +133,8 @@ const BingoCard = ({ setBingo, bingo }: any) => {
   const checkBingo = (updatedSlots: Slot[]) => {
     let isBingo = false;
     let isNewPattern = false;
-    console.log({ updatedSlots });
+    let patterns = [];
+
     for (const pattern of winningPatterns) {
       const isPatternComplete = pattern.every(
         (slotIndex) => updatedSlots[slotIndex].marked
@@ -142,8 +146,8 @@ const BingoCard = ({ setBingo, bingo }: any) => {
       ) {
         isBingo = true;
         isNewPattern = true;
-        setFoundPatterns([...foundPatterns, pattern]);
-        break;
+        patterns.push(pattern);
+        setFoundPatterns([...foundPatterns, ...patterns]);
       }
     }
     setBingo(isBingo);
