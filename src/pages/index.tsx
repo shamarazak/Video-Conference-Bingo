@@ -70,12 +70,33 @@ const Home = () => {
           d="M102,67.1c-9.6-6.1-22-3.1-29.5,2-15.4,10.7-19.6,37.5-7.6,47.8s35.9,3.9,44.5-12.5C115.5,92.6,113.9,74.6,102,67.1Z"
         />
       </svg> */}
-      {bingo && (
-        <div className="absolute right-[50%] top-0">
-          <ConfettiExplosion force={0.8} duration={3000} particleCount={250} />
+      <div className="area">
+        <ul className="circles">
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+          <li></li>
+        </ul>
+
+        {bingo && (
+          <div className="absolute right-[50%] top-0">
+            <ConfettiExplosion
+              force={0.8}
+              duration={3000}
+              particleCount={250}
+            />
+          </div>
+        )}
+        <div className="mx-auto w-full flex justify-center items-center absolute h-full">
+          <BingoCard setBingo={setBingo} bingo={bingo} />
         </div>
-      )}
-      <BingoCard setBingo={setBingo} bingo={bingo} />
+      </div>
     </div>
     // </animated.div>
   );

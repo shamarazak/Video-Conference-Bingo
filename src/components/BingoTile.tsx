@@ -7,6 +7,7 @@ interface Slot {
   text: string;
   marked: boolean;
 }
+const FreeSlot = "CONF CALL 😁 BINGO";
 const phrases = [
   "Sorry, I couldn't log in",
   "I had connection issues",
@@ -14,7 +15,7 @@ const phrases = [
   "You're on mute",
   "Let's circle back to that later",
   "Someone join the meeting late",
-  "Technical difficulties",
+  "Hello, hello?",
   "Can everyone see my screen?",
   "Let's take this offline",
   "Is anyone else having problems?",
@@ -24,7 +25,7 @@ const phrases = [
   "Sorry, I was on mute",
   "Can you see my webcam?",
   "Lost internet connection",
-  "Echo/Feedback",
+  "(load painful echo / feedback)",
   "Waiting for someone to join",
   "Let's wrap this up",
   "I'll follow up with an email",
@@ -79,7 +80,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
     const middleIndex = 12;
     const newPhrases = [
       ...shuffledPhrases.slice(0, middleIndex),
-      "Free Space",
+      FreeSlot,
       ...shuffledPhrases.slice(middleIndex),
     ];
     const newSlots = newPhrases.map((phrase, index) => ({
@@ -101,7 +102,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
   };
 
   const markCell = (index: number) => {
-    if (slots[index].text !== "Free Space") {
+    if (slots[index].text !== FreeSlot) {
       const updatedSlots = [...slots];
       if (!slots[index].marked) {
         updatedSlots[index].marked = true;
@@ -141,26 +142,28 @@ const BingoCard = ({ setBingo, bingo }: any) => {
   console.log(bingo);
 
   return (
-    <div className="bingo-card grid grid-cols-5 gap-4">
-      {slots.map(({ id, text, marked }) => (
-        <div
-          key={id}
-          className={`bingo-cell p-4 border border-gray-300 rounded-md text-center ${
-            marked ? "bg-green-200" : ""
-          }`}
-          onClick={() => markCell(id)}
-        >
-          {text}
-        </div>
-      ))}
-
-      {/* {bingo && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="bg-white p-4 rounded-lg shadow-lg">
-            <p className="text-xl font-semibold text-green-500">BINGO!</p>
+    <div className="grid grid-cols-5 lg:w-[60%] h-fit text-white ">
+      {slots.map(({ id, text, marked }) => {
+        const isPartOfBingo = foundPatterns.some((pattern) =>
+          pattern.includes(id)
+        );
+        console.log(isPartOfBingo);
+        return (
+          <div
+            key={id}
+            className={`Tile bg-blue-500 bg-opacity-40 border-2 p-3 cursor-pointer lg:min-h-[120px] rounded-md text-center flex items-center justify-center border-opacity-20 ${
+              marked ? "bg-blue-500 bg-opacity-90 " : ""
+            } ${
+              isPartOfBingo
+                ? "border-white border-opacity-100 font-bold line-through"
+                : "border-gray-300"
+            }`}
+            onClick={() => markCell(id)}
+          >
+            <p>{text}</p>
           </div>
-        </div>
-      )} */}
+        );
+      })}
     </div>
   );
 };
