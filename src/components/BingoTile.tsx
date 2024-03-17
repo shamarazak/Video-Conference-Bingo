@@ -73,23 +73,32 @@ const BingoCard = ({ setBingo, bingo }: any) => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [winningPatterns, setWinningPatterns] = useState<number[][]>([]);
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
+
   useEffect(() => {
+    initialSettings();
+  }, []);
+
+  const initialSettings = () => {
+    //Shuffling phrases
     const shuffledPhrases = shuffle(phrases);
+
     const middleIndex = 12;
     const newPhrases = [
       ...shuffledPhrases.slice(0, middleIndex),
       FreeSlot,
       ...shuffledPhrases.slice(middleIndex),
     ];
+
     const newSlots = newPhrases.map((phrase, index) => ({
       id: index,
       text: phrase,
       marked: index === middleIndex,
     }));
+
     setSlots(newSlots);
     const patterns = generateWinningPatterns(5);
     setWinningPatterns(patterns);
-  }, []);
+  };
 
   const shuffle = (array: string[]) => {
     for (let i = array.length - 1; i > 0; i--) {
@@ -137,40 +146,50 @@ const BingoCard = ({ setBingo, bingo }: any) => {
     }
   };
 
-  console.log(bingo);
-
   const markedStyle =
     "line-through bg-blue-500 bg-opacity-80 border border-white border-opacity-10";
   const bingoStyle =
-    markedStyle + "border-opacity-100 font-bold bg-opacity-100 bg-blue-600";
+    markedStyle + "border-opacity-100 font-semibold bg-opacity-100 bg-blue-600";
   const normal =
     "bg-blue-500 bg-opacity-20 border border-white border-opacity-30 ";
 
+  const handleReset = () => {
+    initialSettings();
+    setFoundPatterns([]);
+  };
+
   return (
-    <div className="grid grid-cols-5 lg:w-[60%] h-fit text-white ">
-      {slots.map(({ id, text, marked }) => {
-        const isPartOfBingo = foundPatterns.some((pattern) =>
-          pattern.includes(id)
-        );
-        console.log(isPartOfBingo);
-        return (
-          <div
-            key={id}
-            className={`tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 ${
-              isPartOfBingo
-                ? marked && text !== FreeSlot
-                  ? bingoStyle
+    <div className="lg:w-[60%] mx-auto">
+      <div className="grid grid-cols-5  h-fit text-white ">
+        {slots.map(({ id, text, marked }) => {
+          const isPartOfBingo = foundPatterns.some((pattern) =>
+            pattern.includes(id)
+          );
+
+          return (
+            <div
+              key={id}
+              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 ${
+                isPartOfBingo
+                  ? marked && text !== FreeSlot
+                    ? bingoStyle
+                    : normal
+                  : text !== FreeSlot && marked
+                  ? markedStyle
                   : normal
-                : text !== FreeSlot && marked
-                ? markedStyle
-                : normal
-            } `}
-            onClick={() => text !== FreeSlot && markCell(id)}
-          >
-            <p>{text}</p>
-          </div>
-        );
-      })}
+              } `}
+              onClick={() => text !== FreeSlot && markCell(id)}
+            >
+              <p>{text}</p>
+            </div>
+          );
+        })}
+      </div>
+      <div className="flex justify-center mt-3">
+        <button className="ripple" onClick={() => handleReset()}>
+          Reset
+        </button>
+      </div>
     </div>
   );
 };
