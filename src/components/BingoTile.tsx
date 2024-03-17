@@ -151,7 +151,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
       setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
     }
   };
-
+  const freeSlot = "bg-blue-500";
   const markedStyle =
     "line-through bg-blue-500 bg-opacity-80 border border-white border-opacity-10";
   const bingoStyle =
@@ -176,7 +176,9 @@ const BingoCard = ({ setBingo, bingo }: any) => {
             <div
               key={id}
               className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 lg:aspect-auto aspect-square ${
-                isPartOfBingo
+                text === FreeSlot
+                  ? freeSlot
+                  : isPartOfBingo
                   ? marked && text !== FreeSlot
                     ? bingoStyle
                     : normal
