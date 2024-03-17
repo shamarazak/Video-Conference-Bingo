@@ -56,6 +56,7 @@ const generateWinningPatterns = (size: number) => {
 
   return [...rows, ...columns, ...diagonals];
 };
+
 const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
   if (array1.length !== array2.length) {
     return false;
@@ -79,7 +80,6 @@ const BingoCard = ({ setBingo, bingo }: any) => {
   }, []);
 
   const initialSettings = () => {
-    //Shuffling phrases
     const shuffledPhrases = shuffle(phrases);
 
     const middleIndex = 12;
@@ -115,6 +115,12 @@ const BingoCard = ({ setBingo, bingo }: any) => {
         updatedSlots[index].marked = true;
       } else {
         updatedSlots[index].marked = false;
+
+        const updatedFoundPatterns = foundPatterns.filter(
+          (pattern) => !pattern.includes(index)
+        );
+
+        setFoundPatterns(updatedFoundPatterns);
       }
       setSlots(updatedSlots);
       checkBingo(updatedSlots);
@@ -129,7 +135,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
       const isPatternComplete = pattern.every(
         (slotIndex) => updatedSlots[slotIndex].marked
       );
-      console.log(foundPatterns);
+
       if (
         isPatternComplete &&
         !foundPatterns.some((p) => arraysAreEqual(p, pattern))
@@ -160,7 +166,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
 
   return (
     <div className="lg:w-[60%] mx-auto">
-      <div className="grid grid-cols-5  h-fit text-white ">
+      <div className="grid grid-cols-5  h-fit text-white mx-3">
         {slots.map(({ id, text, marked }) => {
           const isPartOfBingo = foundPatterns.some((pattern) =>
             pattern.includes(id)
@@ -169,7 +175,7 @@ const BingoCard = ({ setBingo, bingo }: any) => {
           return (
             <div
               key={id}
-              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 ${
+              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 lg:aspect-auto aspect-square ${
                 isPartOfBingo
                   ? marked && text !== FreeSlot
                     ? bingoStyle
@@ -186,7 +192,10 @@ const BingoCard = ({ setBingo, bingo }: any) => {
         })}
       </div>
       <div className="flex justify-center mt-3">
-        <button className="ripple" onClick={() => handleReset()}>
+        <button
+          className="ripple text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer bg-blue-500 rounded-md shadow-md outline-none"
+          onClick={() => handleReset()}
+        >
           Reset
         </button>
       </div>
