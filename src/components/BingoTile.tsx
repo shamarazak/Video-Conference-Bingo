@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Phrase } from "../../types/phrase.interface";
-import { useSpring, animated } from "react-spring";
-import ConfettiExplosion from "react-confetti-explosion";
+
 interface Slot {
   id: number;
   text: string;
@@ -141,6 +139,13 @@ const BingoCard = ({ setBingo, bingo }: any) => {
 
   console.log(bingo);
 
+  const markedStyle =
+    "line-through bg-blue-500 bg-opacity-80 border border-white border-opacity-10";
+  const bingoStyle =
+    markedStyle + "border-opacity-100 font-bold bg-opacity-100 bg-blue-600";
+  const normal =
+    "bg-blue-500 bg-opacity-20 border border-white border-opacity-30 ";
+
   return (
     <div className="grid grid-cols-5 lg:w-[60%] h-fit text-white ">
       {slots.map(({ id, text, marked }) => {
@@ -151,14 +156,16 @@ const BingoCard = ({ setBingo, bingo }: any) => {
         return (
           <div
             key={id}
-            className={`Tile bg-blue-500 bg-opacity-40 border-2 p-3 cursor-pointer lg:min-h-[120px] rounded-md text-center flex items-center justify-center border-opacity-20 ${
-              marked ? "bg-blue-500 bg-opacity-90 " : ""
-            } ${
+            className={`tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 ${
               isPartOfBingo
-                ? "border-white border-opacity-100 font-bold line-through"
-                : "border-gray-300"
-            }`}
-            onClick={() => markCell(id)}
+                ? marked && text !== FreeSlot
+                  ? bingoStyle
+                  : normal
+                : text !== FreeSlot && marked
+                ? markedStyle
+                : normal
+            } `}
+            onClick={() => text !== FreeSlot && markCell(id)}
           >
             <p>{text}</p>
           </div>
