@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
 interface Slot {
   id: number;
@@ -33,30 +33,6 @@ const phrases = [
   "can you email that to everyone?",
 ];
 
-const generateWinningPatterns = (size: number) => {
-  const rows: number[][] = [];
-  const columns: number[][] = [];
-  const diagonals: number[][] = [[], []];
-
-  for (let i = 0; i < size; i++) {
-    const row = [];
-    const column = [];
-    for (let j = 0; j < size; j++) {
-      row.push(i * size + j);
-      column.push(i + j * size);
-    }
-    rows.push(row);
-    columns.push(column);
-  }
-
-  for (let i = 0; i < size; i++) {
-    diagonals[0].push(i * (size + 1));
-    diagonals[1].push((i + 1) * (size - 1));
-  }
-
-  return [...rows, ...columns, ...diagonals];
-};
-
 const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
   if (array1.length !== array2.length) {
     return false;
@@ -75,8 +51,33 @@ const BingoCard: React.FC<{
   setBingo: (value: boolean) => void;
 }> = ({ setBingo }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
-  const [winningPatterns, setWinningPatterns] = useState<number[][]>([]);
+
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
+
+  const generateWinningPatterns = useMemo(() => {
+    const size = 5;
+    const rows: number[][] = [];
+    const columns: number[][] = [];
+    const diagonals: number[][] = [[], []];
+
+    for (let i = 0; i < size; i++) {
+      const row = [];
+      const column = [];
+      for (let j = 0; j < size; j++) {
+        row.push(i * size + j);
+        column.push(i + j * size);
+      }
+      rows.push(row);
+      columns.push(column);
+    }
+
+    for (let i = 0; i < size; i++) {
+      diagonals[0].push(i * (size + 1));
+      diagonals[1].push((i + 1) * (size - 1));
+    }
+
+    return [...rows, ...columns, ...diagonals];
+  }, []);
 
   useEffect(() => {
     initialSettings();
@@ -99,8 +100,8 @@ const BingoCard: React.FC<{
     }));
 
     setSlots(newSlots);
-    const patterns = generateWinningPatterns(5);
-    setWinningPatterns(patterns);
+    // const patterns = generateWinningPatterns(5);
+    // setWinningPatterns(patterns);
   };
 
   const shuffle = (array: string[]) => {
@@ -122,7 +123,6 @@ const BingoCard: React.FC<{
         const updatedFoundPatterns = foundPatterns.filter(
           (pattern) => !pattern.includes(index)
         );
-        console.log(updatedFoundPatterns);
         setFoundPatterns(updatedFoundPatterns);
       }
       setSlots(updatedSlots);
@@ -132,10 +132,9 @@ const BingoCard: React.FC<{
 
   const checkBingo = (updatedSlots: Slot[]) => {
     let isBingo = false;
-    let isNewPattern = false;
-    let patterns = [];
+    let newPatterns: number[][] = [];
 
-    for (const pattern of winningPatterns) {
+    for (const pattern of generateWinningPatterns) {
       const isPatternComplete = pattern.every(
         (slotIndex) => updatedSlots[slotIndex].marked
       );
@@ -145,16 +144,43 @@ const BingoCard: React.FC<{
         !foundPatterns.some((p) => arraysAreEqual(p, pattern))
       ) {
         isBingo = true;
-        isNewPattern = true;
-        patterns.push(pattern);
-        setFoundPatterns([...foundPatterns, ...patterns]);
+        newPatterns.push(pattern);
       }
     }
-    if (isBingo) setBingo(isBingo);
-    // if (isNewPattern) {
-    //   setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
-    // }
+
+    if (isBingo) {
+      setBingo((prev) => [...prev, new Date().getTime()]);
+      setFoundPatterns((prev) => [...prev, ...newPatterns]);
+    }
   };
+  // const checkBingo = (updatedSlots: Slot[]) => {
+  //   let isBingo = false;
+  //   let isNewPattern = false;
+  //   let patterns = [];
+
+  //   for (const pattern of generateWinningPatterns) {
+  //     const isPatternComplete = pattern.every(
+  //       (slotIndex) => updatedSlots[slotIndex].marked
+  //     );
+
+  //     if (
+  //       isPatternComplete &&
+  //       !foundPatterns.some((p) => arraysAreEqual(p, pattern))
+  //     ) {
+  //       isBingo = true;
+  //       isNewPattern = true;
+  //       patterns.push(pattern);
+  //       setFoundPatterns([...foundPatterns, ...patterns]);
+  //     }
+  //   }
+  //   // if (isBingo) setBingo(isBingo);
+  //   if (isBingo) {
+  //     setBingo((prev) => [...prev, new Date()]);
+  //   }
+  //   // if (isNewPattern) {
+  //   //   setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
+  //   // }
+  // };
 
   const freeSlot = "bg-blue-500";
   const markedStyle =
