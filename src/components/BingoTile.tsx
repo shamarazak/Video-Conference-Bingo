@@ -150,11 +150,12 @@ const BingoCard: React.FC<{
         setFoundPatterns([...foundPatterns, ...patterns]);
       }
     }
-    setBingo(isBingo);
-    if (isNewPattern) {
-      setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
-    }
+    if (isBingo) setBingo(isBingo);
+    // if (isNewPattern) {
+    //   setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
+    // }
   };
+
   const freeSlot = "bg-blue-500";
   const markedStyle =
     "line-through bg-blue-500 bg-opacity-80 border border-white border-opacity-10";

@@ -15,16 +15,17 @@ const Home = () => {
           ))}
         </ul>
         {bingo && (
-          <div className="absolute right-[50%] top-0 z-20">
+          <div className="absolute right-[50%] top-0 ">
             <ConfettiExplosion
               className="z-30"
               force={0.8}
-              duration={3000}
+              duration={1500}
               particleCount={250}
+              onComplete={() => setBingo(false)}
             />
           </div>
         )}
-        <div className="mx-auto w-full flex justify-center items-center my-10 h-full z-0">
+        <div className="mx-auto w-full flex justify-center items-center my-10 h-full z-30">
           <BingoCard setBingo={setBingo} />
         </div>
       </div>
