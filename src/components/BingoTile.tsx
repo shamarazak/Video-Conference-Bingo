@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 
 interface Slot {
   id: number;
@@ -72,7 +72,7 @@ const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
 };
 
 const BingoCard: React.FC<{
-  setBingo: (value: boolean) => void;
+  setBingo: Dispatch<SetStateAction<any[]>>;
 }> = ({ setBingo }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [winningPatterns, setWinningPatterns] = useState<number[][]>([]);
@@ -132,7 +132,7 @@ const BingoCard: React.FC<{
 
   const checkBingo = (updatedSlots: Slot[]) => {
     let isBingo = false;
-    let isNewPattern = false;
+    // let isNewPattern = false;
     let patterns = [];
 
     for (const pattern of winningPatterns) {
@@ -145,14 +145,17 @@ const BingoCard: React.FC<{
         !foundPatterns.some((p) => arraysAreEqual(p, pattern))
       ) {
         isBingo = true;
-        isNewPattern = true;
+        // isNewPattern = true;
         patterns.push(pattern);
         setFoundPatterns([...foundPatterns, ...patterns]);
       }
     }
-    setBingo(isBingo);
-    if (isNewPattern) {
-      setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
+
+    if (isBingo) {
+      setBingo((prev) => [...prev, Date.now()]);
+
+      // if (isNewPattern) {
+      //   setTimeout(() => setBingo(false), 3000);
     }
   };
   const freeSlot = "bg-blue-500";
