@@ -6,41 +6,25 @@ import { useSpring, animated } from "react-spring";
 const Home = () => {
   const [bingo, setBingo] = useState(false);
 
-  const styles = useSpring({
-    from: { background: "lightblue" },
-    to: async (next) => {
-      while (true) {
-        await next({ background: "lightgreen" });
-        await next({ background: "lightblue" });
-      }
-    },
-  });
   return (
-    <div className="flex items-center justify-center min-h-screen w-full ">
-      <div className="area">
+    <div className="flex items-center justify-center min-h-screen w-full relative">
+      <div className="area flex justify-center items-center h-full relative">
         <ul className="circles">
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          {[...Array(10)].map((_, index) => (
+            <li key={index}></li>
+          ))}
         </ul>
-
         {bingo && (
-          <div className="absolute right-[50%] top-0">
+          <div className="absolute right-[50%] top-0 z-20">
             <ConfettiExplosion
+              className="z-30"
               force={0.8}
               duration={3000}
               particleCount={250}
             />
           </div>
         )}
-        <div className="mx-auto w-full flex justify-center items-center absolute h-full">
+        <div className="mx-auto w-full flex justify-center items-center my-10 h-full z-0">
           <BingoCard setBingo={setBingo} />
         </div>
       </div>
