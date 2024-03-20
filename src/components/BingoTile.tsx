@@ -18,7 +18,6 @@ const BINGO_STYLE =
   MARKED_STYLE + "border-opacity-100 font-semibold bg-opacity-100 bg-blue-600";
 const DEFAULT =
   "bg-blue-500 bg-opacity-20 border border-white border-opacity-30 ";
-const ALL_BINGO = "border border-[#7db589]";
 
 //Check if two arrays are equal
 const arraysAreEqual = (array1: number[], array2: number[]): boolean => {
@@ -86,9 +85,6 @@ const BingoCard: React.FC<{}> = () => {
   useEffect(() => {
     if (allPatternsCleared) {
       setShowConfetti(true);
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 5000);
     }
   }, [allPatternsCleared]);
 
@@ -166,7 +162,7 @@ const BingoCard: React.FC<{}> = () => {
 
   return (
     <div className="lg:w-[70%] mx-auto">
-      {!showConfetti ? (
+      {!allPatternsCleared ? (
         <div
           className={`grid h-fit text-white mx-3`}
           style={{
@@ -184,8 +180,6 @@ const BingoCard: React.FC<{}> = () => {
                 className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${
                   text === FREE_SLOT
                     ? FREE_SLOT_STYLE
-                    : allPatternsCleared
-                    ? ALL_BINGO
                     : isPartOfBingo
                     ? marked && text !== FREE_SLOT
                       ? BINGO_STYLE
@@ -203,14 +197,17 @@ const BingoCard: React.FC<{}> = () => {
         </div>
       ) : (
         <>
-          <div className="absolute right-[50%] top-0 ">
-            <ConfettiExplosion
-              className="z-30"
-              force={0.8}
-              duration={1500}
-              particleCount={150}
-            />
-          </div>
+          {showConfetti && (
+            <div className="absolute right-[50%] top-0 ">
+              <ConfettiExplosion
+                className="z-30"
+                force={0.8}
+                duration={1500}
+                particleCount={150}
+                onComplete={() => setShowConfetti(false)}
+              />
+            </div>
+          )}
           <div className="flex justify-center items-center">
             <p className="bingo-text font-bingo text-[#f9c430]">BINGO!</p>
           </div>
