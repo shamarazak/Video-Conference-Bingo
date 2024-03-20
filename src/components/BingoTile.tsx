@@ -111,36 +111,35 @@ const arraysAreEqual = (array1: number[], array2: number[]): boolean => {
 const SIZE = 5;
 const PARSED_SIZE = SIZE % 2 === 0 ? SIZE - 1 : SIZE;
 
+const generateWinningPatterns = (size: number) => {
+  const rows: number[][] = [];
+  const columns: number[][] = [];
+  const diagonals: number[][] = [[], []];
+
+  for (let i = 0; i < PARSED_SIZE; i++) {
+    const row = [];
+    const column = [];
+    for (let j = 0; j < PARSED_SIZE; j++) {
+      row.push(i * PARSED_SIZE + j);
+      column.push(i + j * PARSED_SIZE);
+    }
+    rows.push(row);
+    columns.push(column);
+  }
+
+  for (let i = 0; i < PARSED_SIZE; i++) {
+    diagonals[0].push(i * (PARSED_SIZE + 1));
+    diagonals[1].push((i + 1) * (PARSED_SIZE - 1));
+  }
+
+  return [...rows, ...columns, ...diagonals];
+};
 const BingoCard: React.FC<{
-  setBingo: React.Dispatch<React.SetStateAction<number[]>>;
+  setBingo: (value: boolean) => void;
 }> = ({ setBingo }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
-
+  const [winningPatterns, setWinningPatterns] = useState<number[][]>([]);
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
-
-  const generateWinningPatterns = useMemo(() => {
-    const rows: number[][] = [];
-    const columns: number[][] = [];
-    const diagonals: number[][] = [[], []];
-
-    for (let i = 0; i < PARSED_SIZE; i++) {
-      const row = [];
-      const column = [];
-      for (let j = 0; j < PARSED_SIZE; j++) {
-        row.push(i * PARSED_SIZE + j);
-        column.push(i + j * PARSED_SIZE);
-      }
-      rows.push(row);
-      columns.push(column);
-    }
-
-    for (let i = 0; i < PARSED_SIZE; i++) {
-      diagonals[0].push(i * (PARSED_SIZE + 1));
-      diagonals[1].push((i + 1) * (PARSED_SIZE - 1));
-    }
-
-    return [...rows, ...columns, ...diagonals];
-  }, [PARSED_SIZE]);
 
   useEffect(() => {
     initialSettings();
@@ -163,7 +162,8 @@ const BingoCard: React.FC<{
       text: phrase,
       marked: index === middleIndex,
     }));
-
+    const patterns = generateWinningPatterns(5);
+    setWinningPatterns(patterns);
     setSlots(newSlots);
   };
 
@@ -197,7 +197,7 @@ const BingoCard: React.FC<{
     let isBingo = false;
     let newPatterns: number[][] = [];
 
-    for (const pattern of generateWinningPatterns) {
+    for (const pattern of winningPatterns) {
       const isPatternComplete = pattern.every(
         (slotIndex) => updatedSlots[slotIndex].marked
       );
@@ -212,38 +212,10 @@ const BingoCard: React.FC<{
     }
 
     if (isBingo) {
-      setBingo((prev) => [...prev, new Date().getTime()]);
+      setBingo(isBingo);
       setFoundPatterns((prev) => [...prev, ...newPatterns]);
     }
   };
-  // const checkBingo = (updatedSlots: Slot[]) => {
-  //   let isBingo = false;
-  //   let isNewPattern = false;
-  //   let patterns = [];
-
-  //   for (const pattern of generateWinningPatterns) {
-  //     const isPatternComplete = pattern.every(
-  //       (slotIndex) => updatedSlots[slotIndex].marked
-  //     );
-
-  //     if (
-  //       isPatternComplete &&
-  //       !foundPatterns.some((p) => arraysAreEqual(p, pattern))
-  //     ) {
-  //       isBingo = true;
-  //       isNewPattern = true;
-  //       patterns.push(pattern);
-  //       setFoundPatterns([...foundPatterns, ...patterns]);
-  //     }
-  //   }
-  //   // if (isBingo) setBingo(isBingo);
-  //   if (isBingo) {
-  //     setBingo((prev) => [...prev, new Date()]);
-  //   }
-  //   // if (isNewPattern) {
-  //   //   setTimeout(() => setBingo(false), 3000); // Show bingo for 3 seconds
-  //   // }
-  // };
 
   const freeSlot = "bg-blue-500";
   const markedStyle =
