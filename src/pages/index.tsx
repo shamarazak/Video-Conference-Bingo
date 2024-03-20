@@ -19,7 +19,7 @@ const Home = () => {
               className="z-30"
               force={0.8}
               duration={1500}
-              particleCount={250}
+              particleCount={150}
               onComplete={() => setBingo(false)}
             />
           </div>

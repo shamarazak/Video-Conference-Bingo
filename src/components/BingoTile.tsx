@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Phrases } from "../../constants/phrases";
 
 interface Slot {
@@ -6,116 +6,39 @@ interface Slot {
   text: string;
   marked: boolean;
 }
-const FREE_SLOT = "CONF CALL 😁 BINGO";
-// const Phrases = [
-//   "Sorry, I couldn't log in",
-//   "I had connection issues",
-//   "Can you hear me?",
-//   "You're on mute",
-//   "Let's circle back to that later",
-//   "Someone join the meeting late",
-//   "Hello, hello?",
-//   "Can everyone see my screen?",
-//   "Let's take this offline",
-//   "Is anyone else having problems?",
-//   "Can you repeat that, please?",
-//   "Background noise",
-//   "Awkward silence",
-//   "Sorry, I was on mute",
-//   "Can you see my webcam?",
-//   "Lost internet connection",
-//   "(load painful echo / feedback)",
-//   "Waiting for someone to join",
-//   "Let's wrap this up",
-//   "I'll follow up with an email",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-//   //
-//   "I think you're on mute",
-//   "Can you turn on your camera?",
-//   "I'll share my screen",
-//   "Let's schedule another meeting",
-//   "We're experiencing technical difficulties",
-//   "Could you speak up?",
-//   "Please raise your hand",
-//   "Could you summarize that?",
-//   "I have a bad connection",
-//   "Can you see my pointer?",
-//   "Waiting for someone to join",
-//   "Let's wrap this up",
-//   "I'll follow up with an email",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-//   "I have a bad connection",
-//   "Can you see my pointer?",
-//   "Waiting for someone to join",
-//   "Let's wrap this up",
-//   "I'll follow up with an email",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-//   "I have a bad connection",
-//   "Can you see my pointer?",
-//   "Waiting for someone to join",
-//   "Let's wrap this up",
-//   "I'll follow up with an email",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-//   "Can you see my webcam?",
-//   "Lost internet connection",
-//   "(load painful echo / feedback)",
-//   "Waiting for someone to join",
-//   "Let's wrap this up",
-//   "I'll follow up with an email",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-//   "Can you see my webcam?",
-//   "Lost internet connection",
-//   "(load painful echo / feedback)",
-//   "Waiting for someone to join",
-//   "Let's wrap this up",
-//   "I'll follow up with an email",
-//   "I'm having trouble with my connection.",
-//   "Next slide, please.",
-//   "can everyone go on mute",
-//   "can you email that to everyone?",
-// ];
 
+const FREE_SLOT = "CONF CALL 😁 BINGO";
+const SIZE = 5;
+const PARSED_SIZE = SIZE % 2 === 0 ? SIZE - 1 : SIZE;
+const FREE_SLOT_STYLE = "bg-blue-500";
+const MARKED_STYLE =
+  "line-through bg-blue-500 bg-opacity-80 border border-white border-opacity-10";
+const BINGO_STYLE =
+  MARKED_STYLE + "border-opacity-100 font-semibold bg-opacity-100 bg-blue-600";
+const DEFAULT =
+  "bg-blue-500 bg-opacity-20 border border-white border-opacity-30 ";
+const ALL_BINGO = "border border-[#c84e54]";
+
+//Check if two arrays are equal
 const arraysAreEqual = (array1: number[], array2: number[]): boolean => {
   if (array1.length !== array2.length) {
     return false;
   }
-
   for (let i = 0; i < array1.length; i++) {
     if (array1[i] !== array2[i]) {
       return false;
     }
   }
-
   return true;
 };
 
-const SIZE = 5;
-const PARSED_SIZE = SIZE % 2 === 0 ? SIZE - 1 : SIZE;
-
-const generateWinningPatterns = (size: number) => {
+//Generate all possible winning patterns
+const generateWinningPatterns = () => {
   const rows: number[][] = [];
   const columns: number[][] = [];
   const diagonals: number[][] = [[], []];
 
+  //Generate rows and columns
   for (let i = 0; i < PARSED_SIZE; i++) {
     const row = [];
     const column = [];
@@ -127,6 +50,7 @@ const generateWinningPatterns = (size: number) => {
     columns.push(column);
   }
 
+  //Generate diagonals
   for (let i = 0; i < PARSED_SIZE; i++) {
     diagonals[0].push(i * (PARSED_SIZE + 1));
     diagonals[1].push((i + 1) * (PARSED_SIZE - 1));
@@ -134,6 +58,16 @@ const generateWinningPatterns = (size: number) => {
 
   return [...rows, ...columns, ...diagonals];
 };
+
+//Shuffle an array
+const shuffle = (array: string[]) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 const BingoCard: React.FC<{
   setBingo: (value: boolean) => void;
 }> = ({ setBingo }) => {
@@ -145,6 +79,9 @@ const BingoCard: React.FC<{
     initialSettings();
   }, []);
 
+  const allPatternsCleared = foundPatterns.length === winningPatterns.length;
+
+  //Initialize the bingo cards
   const initialSettings = () => {
     const shuffledPhrases = shuffle(
       Phrases.slice(0, PARSED_SIZE * PARSED_SIZE - 1)
@@ -157,24 +94,19 @@ const BingoCard: React.FC<{
       ...shuffledPhrases.slice(middleIndex),
     ];
 
+    //Create new slots based on shuffled phrases
     const newSlots = newPhrases.map((phrase, index) => ({
       id: index,
       text: phrase,
       marked: index === middleIndex,
     }));
-    const patterns = generateWinningPatterns(5);
+
+    const patterns = generateWinningPatterns();
     setWinningPatterns(patterns);
     setSlots(newSlots);
   };
 
-  const shuffle = (array: string[]) => {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  };
-
+  //Mark or unmark a slot and check if it is bingo already
   const markCell = (index: number) => {
     if (slots[index].text !== FREE_SLOT) {
       const updatedSlots = [...slots];
@@ -210,20 +142,11 @@ const BingoCard: React.FC<{
         newPatterns.push(pattern);
       }
     }
-
     if (isBingo) {
       setBingo(isBingo);
       setFoundPatterns((prev) => [...prev, ...newPatterns]);
     }
   };
-
-  const freeSlot = "bg-blue-500";
-  const markedStyle =
-    "line-through bg-blue-500 bg-opacity-80 border border-white border-opacity-10";
-  const bingoStyle =
-    markedStyle + "border-opacity-100 font-semibold bg-opacity-100 bg-blue-600";
-  const normal =
-    "bg-blue-500 bg-opacity-20 border border-white border-opacity-30 ";
 
   const handleReset = () => {
     initialSettings();
@@ -248,14 +171,16 @@ const BingoCard: React.FC<{
               key={id}
               className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 lg:aspect-auto aspect-square ${
                 text === FREE_SLOT
-                  ? freeSlot
+                  ? FREE_SLOT_STYLE
+                  : allPatternsCleared
+                  ? ALL_BINGO
                   : isPartOfBingo
                   ? marked && text !== FREE_SLOT
-                    ? bingoStyle
-                    : normal
+                    ? BINGO_STYLE
+                    : DEFAULT
                   : text !== FREE_SLOT && marked
-                  ? markedStyle
-                  : normal
+                  ? MARKED_STYLE
+                  : DEFAULT
               } `}
               onClick={() => text !== FREE_SLOT && markCell(id)}
             >
@@ -266,7 +191,9 @@ const BingoCard: React.FC<{
       </div>
       <div className="flex justify-center mt-3">
         <button
-          className="ripple text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer bg-blue-500 rounded-md shadow-md outline-none"
+          className={`ripple text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none ${
+            allPatternsCleared ? "bg-[#c84e54]" : "bg-blue-500"
+          }`}
           onClick={() => handleReset()}
         >
           Reset
