@@ -17,7 +17,7 @@ const BINGO_STYLE =
   MARKED_STYLE + "border-opacity-100 font-semibold bg-opacity-100 bg-blue-600";
 const DEFAULT =
   "bg-blue-500 bg-opacity-20 border border-white border-opacity-30 ";
-const ALL_BINGO = "border border-[#54c84e]";
+const ALL_BINGO = "border border-[#2af520]";
 
 //Check if two arrays are equal
 const arraysAreEqual = (array1: number[], array2: number[]): boolean => {
