@@ -1,17 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import url("https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&family=Madimi+One&display=swap");
 
-@layer base {
-  @font-face {
-    font-family: "Whocats";
-    font-style: normal;
-    font-weight: normal;
-    src: url("../../public/fonts/Whocats.ttf") format("truetype");
-  }
+@font-face {
+  font-family: "Whocats";
+  src: url("/fonts/Whocats.ttf") format("truetype");
 }
-
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -169,6 +163,7 @@ body {
   font-size: calc(4vw + 14px);
   opacity: 0;
   -webkit-text-stroke: 1px #ef4136;
+  font-family: "Whocats", sans-serif;
   animation: grow 1s forwards;
 }
 
