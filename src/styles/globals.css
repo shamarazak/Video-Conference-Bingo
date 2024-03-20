@@ -5,6 +5,7 @@
 @font-face {
   font-family: "Whocats";
   src: url("/fonts/Whocats.ttf") format("truetype");
+  font-display: swap;
 }
 body {
   margin: 0;
