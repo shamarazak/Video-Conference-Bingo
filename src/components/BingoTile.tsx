@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Phrases } from "../../constants/phrases";
+import ConfettiExplosion from "react-confetti-explosion";
 
 interface Slot {
   id: number;
@@ -68,12 +69,11 @@ const shuffle = (array: string[]) => {
   return array;
 };
 
-const BingoCard: React.FC<{
-  setBingo: (value: boolean) => void;
-}> = ({ setBingo }) => {
+const BingoCard: React.FC<{}> = () => {
   const [slots, setSlots] = useState<Slot[]>([]);
   const [winningPatterns, setWinningPatterns] = useState<number[][]>([]);
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   useEffect(() => {
     initialSettings();
@@ -82,6 +82,15 @@ const BingoCard: React.FC<{
   const allPatternsCleared =
     winningPatterns.length > 0 &&
     foundPatterns.length === winningPatterns.length;
+
+  useEffect(() => {
+    if (allPatternsCleared) {
+      setShowConfetti(true);
+      setTimeout(() => {
+        setShowConfetti(false);
+      }, 5000);
+    }
+  }, [allPatternsCleared]);
 
   //Initialize the bingo cards
   const initialSettings = () => {
@@ -145,7 +154,6 @@ const BingoCard: React.FC<{
       }
     }
     if (isBingo) {
-      setBingo(isBingo);
       setFoundPatterns((prev) => [...prev, ...newPatterns]);
     }
   };
@@ -153,59 +161,71 @@ const BingoCard: React.FC<{
   const handleReset = () => {
     initialSettings();
     setFoundPatterns([]);
+    setShowConfetti(false);
   };
 
   return (
     <div className="lg:w-[70%] mx-auto">
-      <div
-        className={`grid h-fit text-white mx-3`}
-        style={{
-          gridTemplateColumns: `repeat(${PARSED_SIZE}, minmax(0, 1fr))`,
-        }}
-      >
-        {slots.map(({ id, text, marked }) => {
-          const isPartOfBingo = foundPatterns.some((pattern) =>
-            pattern.includes(id)
-          );
+      {!showConfetti ? (
+        <div
+          className={`grid h-fit text-white mx-3`}
+          style={{
+            gridTemplateColumns: `repeat(${PARSED_SIZE}, minmax(0, 1fr))`,
+          }}
+        >
+          {slots.map(({ id, text, marked }) => {
+            const isPartOfBingo = foundPatterns.some((pattern) =>
+              pattern.includes(id)
+            );
 
-          return (
-            <div
-              key={id}
-              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${
-                text === FREE_SLOT
-                  ? FREE_SLOT_STYLE
-                  : allPatternsCleared
-                  ? ALL_BINGO
-                  : isPartOfBingo
-                  ? marked && text !== FREE_SLOT
-                    ? BINGO_STYLE
+            return (
+              <div
+                key={id}
+                className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${
+                  text === FREE_SLOT
+                    ? FREE_SLOT_STYLE
+                    : allPatternsCleared
+                    ? ALL_BINGO
+                    : isPartOfBingo
+                    ? marked && text !== FREE_SLOT
+                      ? BINGO_STYLE
+                      : DEFAULT
+                    : text !== FREE_SLOT && marked
+                    ? MARKED_STYLE
                     : DEFAULT
-                  : text !== FREE_SLOT && marked
-                  ? MARKED_STYLE
-                  : DEFAULT
-              } `}
-              onClick={() => text !== FREE_SLOT && markCell(id)}
-            >
-              <p>{text}</p>
-            </div>
-          );
-        })}
-      </div>
-
-      <div className="flex justify-center mt-3">
-        {slots.length > 0 && (
-          <button
-            className={`text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none ${
-              allPatternsCleared
-                ? "bg-[#7db589] hover:bg-[#6dac7a] "
-                : "bg-blue-500 ripple"
-            }`}
-            onClick={() => handleReset()}
-          >
-            Reset
-          </button>
-        )}
-      </div>
+                } `}
+                onClick={() => text !== FREE_SLOT && markCell(id)}
+              >
+                <p>{text}</p>
+              </div>
+            );
+          })}
+        </div>
+      ) : (
+        <>
+          <div className="absolute right-[50%] top-0 ">
+            <ConfettiExplosion
+              className="z-30"
+              force={0.8}
+              duration={1500}
+              particleCount={150}
+            />
+          </div>
+          <div className="flex justify-center items-center">
+            <p className="bingo-text font-bingo text-[#f9c430]">BINGO!</p>
+          </div>
+          <div className="flex justify-center mt-3">
+            {slots.length > 0 && (
+              <button
+                className="text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none bg-blue-500 ripple"
+                onClick={() => handleReset()}
+              >
+                Restart
+              </button>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
