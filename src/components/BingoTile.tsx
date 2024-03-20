@@ -1,39 +1,100 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Phrases } from "../../constants/phrases";
 
 interface Slot {
   id: number;
   text: string;
   marked: boolean;
 }
-const FreeSlot = "CONF CALL 😁 BINGO";
-const phrases = [
-  "Sorry, I couldn't log in",
-  "I had connection issues",
-  "Can you hear me?",
-  "You're on mute",
-  "Let's circle back to that later",
-  "Someone join the meeting late",
-  "Hello, hello?",
-  "Can everyone see my screen?",
-  "Let's take this offline",
-  "Is anyone else having problems?",
-  "Can you repeat that, please?",
-  "Background noise",
-  "Awkward silence",
-  "Sorry, I was on mute",
-  "Can you see my webcam?",
-  "Lost internet connection",
-  "(load painful echo / feedback)",
-  "Waiting for someone to join",
-  "Let's wrap this up",
-  "I'll follow up with an email",
-  "I'm having trouble with my connection.",
-  "Next slide, please.",
-  "can everyone go on mute",
-  "can you email that to everyone?",
-];
+const FREE_SLOT = "CONF CALL 😁 BINGO";
+// const Phrases = [
+//   "Sorry, I couldn't log in",
+//   "I had connection issues",
+//   "Can you hear me?",
+//   "You're on mute",
+//   "Let's circle back to that later",
+//   "Someone join the meeting late",
+//   "Hello, hello?",
+//   "Can everyone see my screen?",
+//   "Let's take this offline",
+//   "Is anyone else having problems?",
+//   "Can you repeat that, please?",
+//   "Background noise",
+//   "Awkward silence",
+//   "Sorry, I was on mute",
+//   "Can you see my webcam?",
+//   "Lost internet connection",
+//   "(load painful echo / feedback)",
+//   "Waiting for someone to join",
+//   "Let's wrap this up",
+//   "I'll follow up with an email",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+//   //
+//   "I think you're on mute",
+//   "Can you turn on your camera?",
+//   "I'll share my screen",
+//   "Let's schedule another meeting",
+//   "We're experiencing technical difficulties",
+//   "Could you speak up?",
+//   "Please raise your hand",
+//   "Could you summarize that?",
+//   "I have a bad connection",
+//   "Can you see my pointer?",
+//   "Waiting for someone to join",
+//   "Let's wrap this up",
+//   "I'll follow up with an email",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+//   "I have a bad connection",
+//   "Can you see my pointer?",
+//   "Waiting for someone to join",
+//   "Let's wrap this up",
+//   "I'll follow up with an email",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+//   "I have a bad connection",
+//   "Can you see my pointer?",
+//   "Waiting for someone to join",
+//   "Let's wrap this up",
+//   "I'll follow up with an email",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+//   "Can you see my webcam?",
+//   "Lost internet connection",
+//   "(load painful echo / feedback)",
+//   "Waiting for someone to join",
+//   "Let's wrap this up",
+//   "I'll follow up with an email",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+//   "Can you see my webcam?",
+//   "Lost internet connection",
+//   "(load painful echo / feedback)",
+//   "Waiting for someone to join",
+//   "Let's wrap this up",
+//   "I'll follow up with an email",
+//   "I'm having trouble with my connection.",
+//   "Next slide, please.",
+//   "can everyone go on mute",
+//   "can you email that to everyone?",
+// ];
 
-const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
+const arraysAreEqual = (array1: number[], array2: number[]): boolean => {
   if (array1.length !== array2.length) {
     return false;
   }
@@ -47,49 +108,53 @@ const arraysAreEqual = (array1: any[], array2: any[]): boolean => {
   return true;
 };
 
+const SIZE = 5;
+const PARSED_SIZE = SIZE % 2 === 0 ? SIZE - 1 : SIZE;
+
 const BingoCard: React.FC<{
-  setBingo: (value: boolean) => void;
+  setBingo: React.Dispatch<React.SetStateAction<number[]>>;
 }> = ({ setBingo }) => {
   const [slots, setSlots] = useState<Slot[]>([]);
 
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
 
   const generateWinningPatterns = useMemo(() => {
-    const size = 5;
     const rows: number[][] = [];
     const columns: number[][] = [];
     const diagonals: number[][] = [[], []];
 
-    for (let i = 0; i < size; i++) {
+    for (let i = 0; i < PARSED_SIZE; i++) {
       const row = [];
       const column = [];
-      for (let j = 0; j < size; j++) {
-        row.push(i * size + j);
-        column.push(i + j * size);
+      for (let j = 0; j < PARSED_SIZE; j++) {
+        row.push(i * PARSED_SIZE + j);
+        column.push(i + j * PARSED_SIZE);
       }
       rows.push(row);
       columns.push(column);
     }
 
-    for (let i = 0; i < size; i++) {
-      diagonals[0].push(i * (size + 1));
-      diagonals[1].push((i + 1) * (size - 1));
+    for (let i = 0; i < PARSED_SIZE; i++) {
+      diagonals[0].push(i * (PARSED_SIZE + 1));
+      diagonals[1].push((i + 1) * (PARSED_SIZE - 1));
     }
 
     return [...rows, ...columns, ...diagonals];
-  }, []);
+  }, [PARSED_SIZE]);
 
   useEffect(() => {
     initialSettings();
   }, []);
 
   const initialSettings = () => {
-    const shuffledPhrases = shuffle(phrases);
+    const shuffledPhrases = shuffle(
+      Phrases.slice(0, PARSED_SIZE * PARSED_SIZE - 1)
+    );
 
-    const middleIndex = 12;
+    const middleIndex = Math.floor(shuffledPhrases.length / 2);
     const newPhrases = [
       ...shuffledPhrases.slice(0, middleIndex),
-      FreeSlot,
+      FREE_SLOT,
       ...shuffledPhrases.slice(middleIndex),
     ];
 
@@ -100,8 +165,6 @@ const BingoCard: React.FC<{
     }));
 
     setSlots(newSlots);
-    // const patterns = generateWinningPatterns(5);
-    // setWinningPatterns(patterns);
   };
 
   const shuffle = (array: string[]) => {
@@ -113,7 +176,7 @@ const BingoCard: React.FC<{
   };
 
   const markCell = (index: number) => {
-    if (slots[index].text !== FreeSlot) {
+    if (slots[index].text !== FREE_SLOT) {
       const updatedSlots = [...slots];
       if (!slots[index].marked) {
         updatedSlots[index].marked = true;
@@ -196,8 +259,13 @@ const BingoCard: React.FC<{
   };
 
   return (
-    <div className="lg:w-[60%] mx-auto">
-      <div className="grid grid-cols-5  h-fit text-white mx-3">
+    <div className="lg:w-[70%] mx-auto">
+      <div
+        className={`grid h-fit text-white mx-3`}
+        style={{
+          gridTemplateColumns: `repeat(${PARSED_SIZE}, minmax(0, 1fr))`,
+        }}
+      >
         {slots.map(({ id, text, marked }) => {
           const isPartOfBingo = foundPatterns.some((pattern) =>
             pattern.includes(id)
@@ -207,17 +275,17 @@ const BingoCard: React.FC<{
             <div
               key={id}
               className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 lg:aspect-auto aspect-square ${
-                text === FreeSlot
+                text === FREE_SLOT
                   ? freeSlot
                   : isPartOfBingo
-                  ? marked && text !== FreeSlot
+                  ? marked && text !== FREE_SLOT
                     ? bingoStyle
                     : normal
-                  : text !== FreeSlot && marked
+                  : text !== FREE_SLOT && marked
                   ? markedStyle
                   : normal
               } `}
-              onClick={() => text !== FreeSlot && markCell(id)}
+              onClick={() => text !== FREE_SLOT && markCell(id)}
             >
               <p>{text}</p>
             </div>

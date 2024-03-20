@@ -1,10 +1,9 @@
 import BingoCard from "@/components/BingoTile";
 import { useState } from "react";
 import ConfettiExplosion from "react-confetti-explosion";
-import { useSpring, animated } from "react-spring";
 
 const Home = () => {
-  const [bingo, setBingo] = useState([]);
+  const [bingo, setBingo] = useState<number[]>([]);
 
   return (
     <div className="flex items-center justify-center min-h-screen w-full relative">
