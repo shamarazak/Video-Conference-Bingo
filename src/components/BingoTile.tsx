@@ -171,7 +171,7 @@ const BingoCard: React.FC<{
           return (
             <div
               key={id}
-              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-red-400 lg:aspect-auto aspect-square ${
+              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${
                 text === FREE_SLOT
                   ? FREE_SLOT_STYLE
                   : allPatternsCleared
