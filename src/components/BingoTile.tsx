@@ -209,7 +209,7 @@ const BingoCard: React.FC<{}> = () => {
             </div>
           )}
           <div className="flex justify-center items-center">
-            <p className="bingo-text text-[#f9c430]">BINGO!</p>
+            <p className="bingo-text font-bingo text-[#f9c430]">BINGO!</p>
           </div>
           <div className="flex justify-center mt-3">
             {slots.length > 0 && (
