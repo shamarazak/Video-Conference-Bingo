@@ -79,7 +79,9 @@ const BingoCard: React.FC<{
     initialSettings();
   }, []);
 
-  const allPatternsCleared = foundPatterns.length === winningPatterns.length;
+  const allPatternsCleared =
+    winningPatterns.length > 0 &&
+    foundPatterns.length === winningPatterns.length;
 
   //Initialize the bingo cards
   const initialSettings = () => {
@@ -169,7 +171,7 @@ const BingoCard: React.FC<{
           return (
             <div
               key={id}
-              className={`lg:ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center active:bg-blue-500 lg:aspect-auto aspect-square ${
+              className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${
                 text === FREE_SLOT
                   ? FREE_SLOT_STYLE
                   : allPatternsCleared
@@ -189,15 +191,18 @@ const BingoCard: React.FC<{
           );
         })}
       </div>
+
       <div className="flex justify-center mt-3">
-        <button
-          className={`ripple text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none ${
-            allPatternsCleared ? "bg-[#54c84e]" : "bg-blue-500"
-          }`}
-          onClick={() => handleReset()}
-        >
-          Reset
-        </button>
+        {slots.length > 0 && (
+          <button
+            className={`ripple text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none ${
+              allPatternsCleared ? "bg-[#54c84e]" : "bg-blue-500"
+            }`}
+            onClick={() => handleReset()}
+          >
+            Reset
+          </button>
+        )}
       </div>
     </div>
   );
