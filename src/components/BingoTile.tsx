@@ -78,7 +78,7 @@ const BingoCard: React.FC<{}> = () => {
     initialSettings();
   }, []);
 
-  const isBingo = foundPatterns.length === SIZE;
+  const isBingo = foundPatterns.length >= SIZE;
 
   useEffect(() => {
     if (isBingo) {
