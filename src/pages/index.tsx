@@ -1,5 +1,4 @@
 import BingoCard from "@/components/BingoTile";
-import { useState } from "react";
 
 const Home = () => {
   return (
