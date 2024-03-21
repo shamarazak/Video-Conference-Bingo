@@ -78,15 +78,13 @@ const BingoCard: React.FC<{}> = () => {
     initialSettings();
   }, []);
 
-  const allPatternsCleared =
-    winningPatterns.length > 0 &&
-    foundPatterns.length === winningPatterns.length;
+  const isBingo = foundPatterns.length === SIZE;
 
   useEffect(() => {
-    if (allPatternsCleared) {
+    if (isBingo) {
       setShowConfetti(true);
     }
-  }, [allPatternsCleared]);
+  }, [isBingo]);
 
   //Initialize the bingo cards
   const initialSettings = () => {
@@ -162,7 +160,7 @@ const BingoCard: React.FC<{}> = () => {
 
   return (
     <div className="lg:w-[70%] mx-auto">
-      {!allPatternsCleared ? (
+      {!isBingo ? (
         <div
           className={`grid h-fit text-white mx-3`}
           style={{
