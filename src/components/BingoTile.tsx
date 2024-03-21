@@ -130,6 +130,21 @@ const BingoCard: React.FC<{}> = () => {
     }
   };
 
+  //Get styles for cells
+  const getCellStyles = (
+    text: string,
+    marked: boolean,
+    isPartOfBingo: boolean
+  ): string => {
+    if (text === FREE_SLOT) {
+      return FREE_SLOT_STYLE;
+    } else if (isPartOfBingo) {
+      return marked && text !== FREE_SLOT ? BINGO_STYLE : DEFAULT;
+    } else {
+      return marked ? MARKED_STYLE : DEFAULT;
+    }
+  };
+
   const checkBingo = (updatedSlots: Slot[]) => {
     let isBingo = false;
     let newPatterns: number[][] = [];
@@ -152,6 +167,7 @@ const BingoCard: React.FC<{}> = () => {
     }
   };
 
+  //Restart the game
   const handleReset = () => {
     initialSettings();
     setFoundPatterns([]);
@@ -175,17 +191,11 @@ const BingoCard: React.FC<{}> = () => {
             return (
               <div
                 key={id}
-                className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${
-                  text === FREE_SLOT
-                    ? FREE_SLOT_STYLE
-                    : isPartOfBingo
-                    ? marked && text !== FREE_SLOT
-                      ? BINGO_STYLE
-                      : DEFAULT
-                    : text !== FREE_SLOT && marked
-                    ? MARKED_STYLE
-                    : DEFAULT
-                } `}
+                className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${getCellStyles(
+                  text,
+                  marked,
+                  isPartOfBingo
+                )}`}
                 onClick={() => text !== FREE_SLOT && markCell(id)}
               >
                 <p>{text}</p>
