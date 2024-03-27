@@ -9,7 +9,6 @@ const Home = () => {
             <li key={index}></li>
           ))}
         </ul>
-
         <div className="mx-auto w-full flex justify-center items-center my-10 h-full z-30">
           <BingoCard />
         </div>
