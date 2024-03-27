@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Phrases } from "../../constants/phrases";
-import ConfettiExplosion from "react-confetti-explosion";
-
+import { useReward } from "react-rewards";
 interface Slot {
   id: number;
   text: string;
@@ -74,6 +73,20 @@ const BingoCard: React.FC<{}> = () => {
   const [foundPatterns, setFoundPatterns] = useState<number[][]>([]);
   const [showConfetti, setShowConfetti] = useState(false);
 
+  const { reward } = useReward("rewardId", "confetti", {
+    spread: 100,
+    lifetime: 500,
+    elementCount: 100,
+    elementSize: 10,
+  });
+
+  const { reward: BingoReward } = useReward("bingoReward", "confetti", {
+    elementCount: 200,
+    elementSize: 20,
+    lifetime: 300,
+    spread: 150,
+  });
+
   useEffect(() => {
     initialSettings();
   }, []);
@@ -82,7 +95,7 @@ const BingoCard: React.FC<{}> = () => {
 
   useEffect(() => {
     if (isBingo) {
-      setShowConfetti(true);
+      BingoReward();
     }
   }, [isBingo]);
 
@@ -146,7 +159,7 @@ const BingoCard: React.FC<{}> = () => {
   };
 
   const checkBingo = (updatedSlots: Slot[]) => {
-    let isBingo = false;
+    let newPatternFound = false;
     let newPatterns: number[][] = [];
 
     for (const pattern of winningPatterns) {
@@ -158,11 +171,12 @@ const BingoCard: React.FC<{}> = () => {
         isPatternComplete &&
         !foundPatterns.some((p) => arraysAreEqual(p, pattern))
       ) {
-        isBingo = true;
+        newPatternFound = true;
         newPatterns.push(pattern);
       }
     }
-    if (isBingo) {
+    if (newPatternFound) {
+      reward();
       setFoundPatterns((prev) => [...prev, ...newPatterns]);
     }
   };
@@ -175,61 +189,65 @@ const BingoCard: React.FC<{}> = () => {
   };
 
   return (
-    <div className="lg:w-[70%] mx-auto">
-      {!isBingo ? (
-        <div
-          className={`grid h-fit text-white mx-3`}
-          style={{
-            gridTemplateColumns: `repeat(${PARSED_SIZE}, minmax(0, 1fr))`,
-          }}
-        >
-          {slots.map(({ id, text, marked }) => {
-            const isPartOfBingo = foundPatterns.some((pattern) =>
-              pattern.includes(id)
-            );
+    <div>
+      <div className="lg:w-[70%] mx-auto">
+        {!isBingo ? (
+          <div
+            className={`grid h-fit text-white mx-3`}
+            style={{
+              gridTemplateColumns: `repeat(${PARSED_SIZE}, minmax(0, 1fr))`,
+            }}
+          >
+            {slots.map(({ id, text, marked }) => {
+              const isPartOfBingo = foundPatterns.some((pattern) =>
+                pattern.includes(id)
+              );
 
-            return (
-              <div
-                key={id}
-                className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${getCellStyles(
-                  text,
-                  marked,
-                  isPartOfBingo
-                )}`}
-                onClick={() => text !== FREE_SLOT && markCell(id)}
-              >
-                <p>{text}</p>
-              </div>
-            );
-          })}
-        </div>
-      ) : (
-        <>
-          {showConfetti && (
-            <div className="absolute right-[50%] top-0 ">
-              <ConfettiExplosion
-                className="z-30"
-                force={0.8}
-                duration={1500}
-                particleCount={150}
-                onComplete={() => setShowConfetti(false)}
+              return (
+                <div
+                  key={id}
+                  className={`ripple tile p-3 cursor-pointer lg:min-h-[120px] flex items-center justify-center lg:aspect-auto aspect-square ${getCellStyles(
+                    text,
+                    marked,
+                    isPartOfBingo
+                  )}`}
+                  onClick={() => text !== FREE_SLOT && markCell(id)}
+                >
+                  <p>{text}</p>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <>
+            <div className="absolute right-[50%] top-0">
+              <span
+                id="bingoReward"
+                className=" z-[100] w-full flex absolute right-[50%] top-0 justify-center"
               />
             </div>
-          )}
-          <div className="flex justify-center items-center">
-            <p className="bingo-text font-bingo text-[#f9c430]">BINGO!</p>
-          </div>
-          <div className="flex justify-center mt-3">
-            {slots.length > 0 && (
-              <button
-                className="text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none bg-blue-500 ripple"
-                onClick={() => handleReset()}
-              >
-                Restart
-              </button>
-            )}
-          </div>
-        </>
+
+            <div className="flex justify-center items-center">
+              <p className="bingo-text font-bingo text-[#f9c430]">BINGO!</p>
+            </div>
+            <div className="flex justify-center mt-3">
+              {slots.length > 0 && (
+                <button
+                  className="text-white border-none px-6 py-3 text-[calc(1vw+3px)] uppercase cursor-pointer  rounded-md shadow-md outline-none bg-blue-500 ripple"
+                  onClick={() => handleReset()}
+                >
+                  Restart
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+      {!isBingo && !showConfetti && (
+        <span
+          id="rewardId"
+          className="absolute z-[100] w-full flex justify-center"
+        />
       )}
     </div>
   );
